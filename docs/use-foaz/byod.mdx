@@ -1,7 +1,29 @@
 ---
-sidebar_position: 3
+sidebar_position: 2
 title: Build your Own
 description: Implement FoAz on your own with open-source building blocks
 ---
 
-Coming soon
+As FoAz is basically comprised of three main components: a reverse proxy, a policy engine, and a vault solution for secrets management.
+A backend developer can implement a FoAz service simply by combining the aforementioned three components as open-source.
+Once setup the FoAz service can be used generically by frontend engineers.
+
+## BYOD FoAz
+
+Here is a high-level process of how a developer can build their own FoAz service using these components:
+
+1. ### **Set up a Reverse Proxy**
+
+   A reverse proxy is used to forward requests from clients to appropriate backend servers. To set up a reverse proxy, you can use tools like Traefik or Envoy. This proxy will sit between your frontend application and your backend services. The frontend will send all API requests to the reverse proxy, which will then forward the request to the appropriate service.
+
+2. ### **Integrate a Policy Engine**
+
+   A policy engine is responsible for authorizing requests based on predefined policies. Open-Policy-Agent (OPA) or AWS Cedar can be used for this purpose. Once a request reaches the reverse proxy from the frontend, before forwarding the request to the backend service, the reverse proxy would consult the policy engine. The policy engine would then check the request against the set policies and decide whether the request should be allowed or not. If the request is permitted, the reverse proxy forwards it to the relevant service; if not, it returns an error response.
+   OPA for example provides plugins for common reverse-proxies and API-gateways.
+
+3. ### **Implement a Vault Solution for Secrets Management**
+   Secrets management is crucial for securely storing and managing any sensitive data like API keys, passwords, or tokens. Hashicorp Vault or Piiano can be utilized for this task. When the policy engine authorizes a request and it needs to be forwarded to a backend service, it might require certain secrets. These secrets are fetched securely from the vault solution. This ensures that sensitive data is never exposed and is securely injected when needed.
+
+By combining these three components, a developer can create a FoAz service that authorizes requests on the frontend, decides whether they comply with the set policies, and safely injects any required secrets. This setup not only offloads the authorization work from backend services but also ensures that sensitive data is securely managed.
+
+This is a simplified explanation and actual implementation might require additional considerations around security, scalability, and reliability. Also, each of these tools has its own configuration and setup process that should be followed carefully.

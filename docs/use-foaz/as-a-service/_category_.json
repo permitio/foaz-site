@@ -1,0 +1,9 @@
+{
+  "label": "FoAz as a Service",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Services implementing FoAz",
+  }
+
+}
