@@ -1,0 +1,119 @@
+---
+sidebar_position: 2
+title: RFC
+description: an RFC internet draft for FoAz
+---
+
+```
+Network Working Group                                                  Or Weis
+Internet-Draft                                                      Asaf Cohen
+Intended status: Standards Track                                     Raz Cohen
+                                                                   Permit, Inc.
+                                                                      MAY 2023
+```
+
+# Frontend-only Authorization (FoAz)
+
+## Abstract
+
+This document proposes a method for Frontend-only Authorization (FoAz), which allows frontend applications to enforce protected access to APIs without requiring a dedicated backend. FoAz enables frontend developers to securely use sensitive resources directly from the frontend, while gating for permissions and without exposing any secrets or sensitive data.
+
+## Status of this Memo
+
+This document is an Internet-Draft which aims to specify an Internet standards track protocol for the
+Internet community, and requests discussion and suggestions for
+improvements. Internet-Drafts are working documents of the Internet Engineering
+Task Force (IETF). Note that other groups may also distribute
+working documents as Internet-Drafts.
+
+<!--The list of current Internet-
+Drafts is at https://datatracker.ietf.org/drafts/current/. -->
+
+## Copyright Notice
+
+Copyright (C) Permit, Inc. (2023). All Rights Reserved.
+
+## Introduction
+
+Frontend-only Authorization (FoAz) is a novel method that enables frontend applications to enforce access to protected APIs without the necessity of a dedicated backend implementation. The method involves a generic backend component that enforces the access, thereby freeing developers from the need to build it themselves. This allows developers to focus more on building their applications.
+
+Despite the seeming paradox in its name, Frontend-only Authorization is both feasible and secure. The backend component, which is responsible for enforcing access, allowing developers to focus on building their applications.
+
+There are two primary use cases for FoAz:
+
+1. **Access 3rd Party Services**: Web applications often need to consume external services to implement their features. This would ordinarily require a secret or API token, along with the app developer's account, and would often cost money to use. FoAz allows developers to call the external service directly from the frontend, with FoAz verifying the identity, checking for permissions, and adding the needed secrets.
+
+2. **Adding Authorization on top of Your API**: Whether it's legacy code, new code, or an app still in development, FoAz can be used to wrap and protect APIs, adding more complex policies and access-control interfaces, without having to change the backend code.
+
+## FoAz components and terms
+
+FoAz uses a backend server component to check and enforce access to the protected API or resource. Further more a FoAz server includes as a proxy component which receives frontend API requests, and then (if approved) redirects them to the end target service, following JWT verification, permission checks, and injection of the end target secrets.
+FoAz is arguably more secure than a proprietary backend built from scratch, as it ensures policies are always in place, and audit logs are automatically generated.
+
+### Terms and terminology
+
+- FoAz service - A backend service implementing this standard.
+- Developer - Integrator adding FoAz to a frontend application to consume protected services
+- Caller - the application component or flow triggering requests to the FoAz service
+- Target service - the API service the Caller means to call via the FoAz service
+
+## FoAz Flow
+
+1. ### Setup
+
+   1. Developer configures JWKS with the FoAz server, so it will be able to verify end-user JWTs.
+   2. Developer Configures the Protected API call with teh FoAz server, and set a secret for it.
+   3. Developer Maps the API call to a governing policy that will gate access to it.
+
+2. ### Authentication
+
+   1. Caller authenticates frontend end-users - producing an application JWT.
+   2. Caller uses the application JWT to authenticate the session with the FoAz server (via the matching JWKs supplied to the FoAz service)
+   3. Caller receives a stand in JWT or other access token from the FoAz server for continued requests.
+
+3. ### Call API via FoAz proxy
+
+   Application calls the target API via the FoAz proxy
+
+   - The Caller frontend application SHOULD (be enabled to) retain as much of the original http call (as it was meant for the original service)
+   - _Proxy Encoding_: The frontend application will initiate an http call to the FoAz service, encoding the actual call to the protected service on it.
+     There are multiple ways to encode the call and it's parameters - the recommended method is to retain the body of the http call, and most headers as they are meant for the target service.
+     Additional information needed by the FoAz service (such as true target URL, authentication token with the FoAz service, secret-key to decrypt or access the secrets store) SHOULD be included as URL query parameters, or dedicated headers.
+   - The Caller MUST connect to the FoAz service with via a secure, certificate verified and encrypted channel (e.g. SSL / TLS)
+   - The Caller MUST not include any FoAz service information (or otherwise sensitive data) on any part of the request that can not be encrypted (e.g. hostname)
+
+4. ### FoAz service enforces policy
+
+   The FoAz service MUST gate incoming requests to its proxy component. Allowing only approved calls to proceed to the requested target service.
+   Denied requests must be answered with an HTTP 403 - to communicate the caller failure due to policy. The FoAz service SHOULD include additional response headers to indicate the denial coming from the FoAz proxy (and not from the target service).
+   As a baseline and in addition to application level policy the FoAz service MUST define allowed services via an allowed list explicity per authenticated user identity, as to avoid the FoAz service being hijacked as an attack platform (masking attackers HTTP requests)
+
+5. ### FoAz service reshapes requests and loads it with needed secrets
+   If allowed by policy The FoAz service SHOULD use a preset configuration to reshape the incoming request before sending it to the target service.
+   The FoAz service SHOULD (When applicable) add the relevant stored secret to the request, as expected by the target service.
+   Optionally the policy itself could be used to reshape the request.
+
+## Policy Enforcement
+
+The FoAz service MUST allow its users to define a policy that would match the authorization policy required by the application logic - note that this policy is different (and usually augmenting) to the authorization policy of the service targeted to protected calls by the caller and FoAz service.
+
+### Policy Engines
+
+The FoAz service SHOULD implement it's policy enforcement with top of the line policy engines (such as Open-Policy-Agent or AWS Cedar).
+Furthermore the FoAz service SHOULD use policy as code, or policy as code generating interfaces to represent the policy in an auditable format.
+
+## Secrets management
+
+The FoAz service MUST load secrets into the reshaped requests from a secure store, and in a secure manner.
+The secure store CAN be one of the following: a secrets vault, an encrypted database.
+The Caller SHOULD equip (via headers or query params in the request) the FoAz service with a secret with which it can decant / decrypt the needed secret (And ideally only the needed secret for the request) from the secrets store.
+
+## Future Scope
+
+The future iterations of FoAz may see changes in the interface due to the early access status. However, the core functionality of providing frontend-only authorization is expected to remain consistent.
+
+---
+
+_This RFC Internet-Draft is open for discussion. Feedback and constructive criticism are welcome._
+
+_Please direct your feedback to this site's Git repository (Pull requests are welcome), or Slack community._

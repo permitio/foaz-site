@@ -1,0 +1,8 @@
+{
+  "label": "Web Standard",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "FoAz is an Internet standard in the making, aiming to support the ever growing velocity of (pure) frontend application development, and bringing security leadership to frontend developers. Read the FoAz RFC here, and the working group definition and guidelines to adopt FoAz and contribute to it."
+  }
+}
