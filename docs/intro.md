@@ -76,4 +76,4 @@ sequenceDiagram
 
 ## Dive deeper - RFC and Working Group
 
-With the ambition of turning FoAZ into a wide spread internet standard part of the efforts here include technical implementation details ([RFC](/rfc)), security guidelines, and working group contribution guidelines.
+With the ambition of turning FoAZ into a wide spread internet standard part of the efforts here include technical implementation details ([RFC](/standard/RFC.mdx)), security guidelines, and working group contribution guidelines.
