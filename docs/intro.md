@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 slug: /
+title: FoAz - Frontend-Only-AuthZ
+description: FoAz is a web standard allowing frontend applications to enforce protected access to APIs without requiring a dedicated backend.
 ---
 
 # FoAz
@@ -10,7 +12,7 @@ _Frontend-Only-Authorization (a web standard)_
 
 ## What is Frontend-Only-Authorization ?
 
-Frontend-only-Authorization (FoAz) is a method allowing frontend applications to enforce protected access to APIs without requiring a dedicated backend.
+Frontend-only-Authorization (FoAz) is a web standard allowing frontend applications to enforce protected access to APIs without requiring a dedicated backend.
 FoAz allows frontend developers to securely use sensitive resources directly from the frontend, while gating for permissions and without exposing any secrets or sensitive data.
 
 ## Isn't Frontend Authorization an Oxymoron ?
