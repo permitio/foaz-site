@@ -53,6 +53,9 @@ const config = {
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
+        gtag: {
+          trackingID: 'G-PXK43FBY5Y'
+        },
       }),
     ],
   ],
@@ -76,6 +79,11 @@ const config = {
             label: "RFC",
           },
           // { to: "/blog", label: "Blog", position: "left" },
+          {
+            href: "https://io.permit.io/FoAz-community",
+            label: "Join FoAz Working Group",
+            position: "right",
+          },
           {
             href: "https://github.com/permitio/",
             label: "GitHub",
